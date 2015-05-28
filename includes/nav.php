@@ -26,6 +26,7 @@
 									<span>
 										<div style="float:left;">
 											<a style="padding: 0;" href="user.php?id='.$user->getId().'"><i style="color:inherit !important" class="fa fa-user"></i> '.$user->getRealName().' '.$user->getRealSurname().'</a>
+											<a style="padding: 0; margin-top: 6px;" href="edit.php"><i style="color:inherit !important; margin-right: 7px;" class="fa fa-cog"></i>Edit</a>
 										</div>
 										<div style="float:right;">
 											<a style="padding: 0;" href="logout.php"><i style="color:inherit !important" class="fa fa-power-off"></i> Log out</a>

@@ -42,6 +42,7 @@ echo $html->injectHeader();
 	<button class="btn" style="margin: 0px 0px 18px 20px;  padding: 12px 10px;">About me</button>
 </div>
 <?php include_once('includes/nav.php'); ?>
+	<div class="overlayBg" style="display:none;"></div>
 	<div class="dash_head_wrapper">
 		<div class="dash_head">
 			<div class="dash_head_img_wrapper">
@@ -49,15 +50,15 @@ echo $html->injectHeader();
 				<?=($fieldsEmpty && $userid == $log_id?'<i class="fa fa-exclamation emptyFieldNotice"></i>':'')?>
 			</div>
 			<h3><?=$thisUser->getRealName().' '.$thisUser->getRealSurname()?></h3>
-			<h4 class="points">0 points</h4>
-			<h4 class="gender"><i class="fa fa-transgender"></i> <?=$thisUser->getGender()?></h4>
+			<!-- <h4 class="gender"><i class="fa fa-transgender"></i> <?=$thisUser->getGender()?></h4> -->
 			<?php if(trim($thisUser->getLocation()) != ''){ ?>
 			<h4 class="gender"><i class="fa fa-map-marker"></i> <?=$thisUser->getLocation()?></h4>
+			<h4 class="points">0 points</h4>
 			<?php } ?>
 			<div class="dash_nav">
 				<ul>
-					<li data-id="user_about" class="clearFloat">About</li>
-					<li data-id="user_articles" class="dash_nav_active">Articles</li>
+					<li data-id="user_about" class="clearFloat dash_nav_active">About</li>
+					<li data-id="user_articles">Articles</li>
 					<li data-id="user_campaigns">Campaigns</li>
 					<li data-id="user_blogs">Blogs</li>
 				</ul>
@@ -65,12 +66,15 @@ echo $html->injectHeader();
 		</div>
 	</div>
 	<div>
-		<div class="user_tab user_about tab_hide">
+		<div class="user_tab user_about tab_show">
 			<h4 class="tab_title">About</h4>
 			<div style="padding:20px" class="contents">
+				<div class="dynamicContent">
+					
+				</div>
 			</div>
 		</div>
-		<div class="user_tab user_articles tab_show">
+		<div class="user_tab user_articles tab_hide">
 			<h4 class="tab_title">Articles</h4>
 			<div style="padding:20px" class="contents">
 				<?php if($thisUser->getId() == $log_id){?>
@@ -88,7 +92,7 @@ echo $html->injectHeader();
 			<div style="padding:20px" class="contents">
 				<?php if($thisUser->getId() == $log_id){?>
 					<div class="createWrapper">
-						<button class="btn user_tab_create_btn" id="createCampaignBtn">Start Campaign</button></a>
+						<a href="launchCampaign.php"><button class="btn user_tab_create_btn" id="createCampaignBtn">Start Campaign</button></a></div>
 					</div>
 				<?php } ?>
 				<div class="dynamicContent">
@@ -107,6 +111,16 @@ echo $html->injectHeader();
 <script>
 	$(function() {
 		user.init(<?=$userid?>);
+
+		// $('#createCampaignBtn').on('click', function(){
+		// 	$('.campaignFormDiv').show().css('margin-top', '4%');
+		// 	$('.overlayBg').show();
+		// });
+
+		// $('.overlayBg').on('click', function(){
+		// 	$('.overlayBg').hide();
+		// 	$('.campaignFormDiv').hide().css('margin-top', '7%')
+		// });
 	});
 
 

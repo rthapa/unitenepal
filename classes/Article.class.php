@@ -69,21 +69,17 @@ class Article{
 			$connection->updateRow('UPDATE 
 										article
 									SET 
-										email = :email,
-										pwd = :pwd,
-										name = :name,
-										ip = :ip,
-										lastlogin = now(),
-										username = :username,
-										activated = :activated
+										ownerid = :ownerid,
+										title = :title,
+										updatedate = now(),
+										coverimg = :coverimg,
+										body = :body
 									WHERE
 										id = :id',
-									array(':email' => $this->getEmail(),
-										':pwd' => $this->getPassword(),
-										':name' => $this->getName(),
-										':ip' => preg_replace('#[^0-9.]#', '', getenv('REMOTE_ADDR')),
-										':username' => $this->getUsername(),
-										':activated' => $this->getActivated(),
+									array(':ownerid' => $this->getOwnerId(),
+										':title' => $this->getTitle(),
+										':coverimg' => $this->getCoverImg(),
+										':body' => $this->getBody(),
 										':id' => $this->getId()
 										));
 		}else{
@@ -107,7 +103,7 @@ class Article{
 										)',
 									 array(':ownerid' => $this->getOwnerId(),
 									 		':title' => $this->getTitle(),
-									 		':updatedate' => $this->getUpdateDate,
+									 		':updatedate' => $this->getUpdateDate(),
 									 		':coverimg' => $this->getCoverImg(),
 									 		':body' => $this->getBody()
 									 		));

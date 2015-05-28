@@ -1,6 +1,6 @@
 <?php
 require __DIR__.'/../config.php';
-require __DIR__.'/../classes/PDOConnect.php';
+require __DIR__.'/../classes/PDOConnect.class.php';
 
 $db = new PDOConnect();
 

@@ -9,9 +9,9 @@ class Object{
 	public static $class;
 
 	public static function getFromId($id, $connection){
-		$query = $connection->query('SELECT * FROM :table
+		$query = $connection->query('SELECT * FROM '.static::$table.'
 							WHERE id =:id LIMIT 1',
-							array(":id"=>$id, ":table"=>static::$table)) ;
+							array(":id"=>$id)) ;
 		if(count($query) > 0){
 			$obj = new static::$class;
 			foreach($query = $query[0] as $key => $value){

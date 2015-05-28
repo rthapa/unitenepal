@@ -223,6 +223,42 @@ var campaigns = {
 	}
 }
 
+var campaign = {
+	init : function (){
+		campaign.loadEventListener();
+	},
+
+	loadEventListener : function(){
+		$('#appreciateBtn').on('click', function(){
+			var campaignid = $(this).data('id');
+			$.ajax({
+				url: "ajax/appreciate.ajax.php",
+				data: {campaignid: campaignid, type: 'campaign'},
+				type: "POST",
+				dataType: "json",
+				success: function(data){
+					if(data.status == 'no campaign found'){
+						//failed
+						
+					}else if(data.status == 'appreciated'){
+						$('#appreciateBtn').html('Appreciated');
+						html = '<div data-id="'+data.userid+'">'
+									+'<a href="user.php?id='+data.userid+'"><img class="supporterImg" src="'+data.userimg+'"></a>'
+								+'</div>';
+						$('.supporterDiv').append(html).hide().fadeIn(1000);
+					}else if(data.status == 'unappreciated'){
+						$('#appreciateBtn').html('Appreciate');
+						$(".supporterDiv").find("[data-id='"+data.userid+"']").fadeOut().remove();
+					}
+				},
+				error: function(){
+					//bad request
+				}
+			});
+		});
+	}
+}
+
 var register = {
 	init : function(){
 		register.loadEventListener();
@@ -236,17 +272,17 @@ var register = {
 			$.trim($('#password').val()) == '' ||
 			$.trim($('#repassword').val()) == ''){
 				//alert('fill form');
-				$('#status').html('<i class="fa fa-exclamation"></i> Please fill all the forms').css('display','block');
+				$('#status').html('<i class="fa fa-exclamation"></i> Please fill all the forms').slideDown();
 				return false;
 			}
 
 			if(!register.validateEmail($.trim($('#email').val()))){
-				$('#status').html('<i class="fa fa-exclamation"></i> Invalid email format').css('display','block');
+				$('#status').html('<i class="fa fa-exclamation"></i> Invalid email format').slideDown();
 				return false;
 			}
 
 			if($.trim($('#password').val()) != $.trim($('#repassword').val())){
-				$('#status').html('<i class="fa fa-exclamation"></i> Password does not match').css('display','block');
+				$('#status').html('<i class="fa fa-exclamation"></i> Password does not match').slideDown();
 				return false;
 			}
 
@@ -272,7 +308,7 @@ var login = {
 			if($.trim($('#email').val()) == '' || $.trim($('#password').val()) == '' ){
 				$('#status')
 				.html("<i class='fa fa-exclamation'></i> Please fill all the forms")
-				.css('display', 'block');
+				.slideDown();
 				return false;
 			}else{
 				var email = $('#email').val();
@@ -288,7 +324,7 @@ var login = {
 							window.location.href = 'user.php?id='+data.userid;
 						}else if(data.status == 'failed'){
 							//failed login
-							$('#status').css('display', 'block').html('The email/username or password is incorrect.');
+							$('#status').html('The email/username or password is incorrect.').slideDown();
 						}
 					},
 					error: function(){
@@ -304,6 +340,7 @@ var login = {
 var user = {
 	init : function(userid){
 		user.loadEventListener();
+		user.loadAbout(userid);
 		user.loadArticles(userid);
 		user.loadCampaigns(userid);
 	},
@@ -350,11 +387,11 @@ var user = {
 					$.each(data, function(k, v){
 						html += '<div class="articleWrapper">'
 									+'<img class="userImg" src="'+v.userimg+'" >'
-									+'<img class="articleCoverImg" src="'+v.coverimg+'">'
+									+'<img class="articleCoverImg" src="files/'+v.coverimg+'">'
 									+'<div class="articleContent">'
 										+'<h4 class="articleTitle">'+v.title+'</h4>'
 										+'<h4 class="articleDate">'+v.date+'</h4>'
-										+'<p>'+v.body+'</p>'
+										// +'<p>'+v.body+'</p>'
 										+'<a href="article.php?id='+v.id+'"><button class="btn articleBtn">Read</button></a>'
 									+'</div>'
 								+'</div>';
@@ -376,7 +413,6 @@ var user = {
 			type : 'GET',
 			data : {type : 'getCampaigns', userid : userid},
 			success : function(data){
-				console.log(data);
 				if(data.hasOwnProperty('status') && data.status == 'no campaigns'){
 					$('.user_campaigns .dynamicContent').html('<p class="tab_status">No campaigns</p>');
 				}else{
@@ -385,13 +421,14 @@ var user = {
 					$.each(data, function(k, v){
 						html += '<div class="imageWrapperGrid">'
 									+'<div class="gridLeft" style="background: url("'+v.img+'");  background-size: cover;">'
+											+'<img src="files/'+v.img+'">'
 									+'</div>'
 									+'<div class="gridRight campaignRight">'
 										+'<h3>'+v.title+'</h3>'
 										+'<h4><i class="fa fa-calendar"></i>'+v.happeningdate+'</h4>'
 										+'<h4><i class="fa fa-map-marker"></i>'+v.location+'</h4>'
 										+'<p>'+v.description+'</p>'
-										+'<button class="btn"><a href="campaign.php?id='+v.id+'">view</a></button>'
+										+'<a href="campaign.php?id='+v.id+'"><button class="btn articleBtn">view</button></a>'
 									+'</div>'
 									+'<div style="clear:both;"></div>'
 								+'</div>';
@@ -403,6 +440,305 @@ var user = {
 			error: function(){
 				alert('error');
 			}
+		});
+	},
+
+	loadAbout : function(userid){
+		$.ajax({
+			url : 'ajax/userdata.ajax.php',
+			dataType : 'JSON',
+			type : 'GET',
+			data : {type : 'getAbout', userid : userid},
+			success : function(data){
+				console.log(data);
+				if(data.hasOwnProperty('status') && data.status == 'no about'){
+					// $('.user_campaigns .dynamicContent').html('<p class="tab_status">No campaigns</p>');
+				}else{
+					var html = '';
+					if($.trim(data.bio) != ''){
+						html += '<p class="about_bio">'+data.bio+'</p>';
+					}
+
+					if(data.expertise.length > 0){
+						html += '<ul class="about_expertise_ul">';
+						$.each(data.expertise, function(i,v){
+							// if(i == data.expertise.length-1){
+							// 	html += '<li class="clearFloat">'+v+'</li>';
+							// }else{
+							// 	html += '<li>'+v+'</li>';
+							// }
+							html += '<li>'+v+'</li>';
+						});
+						html += '</ul>';
+					}
+
+					$('.user_about .dynamicContent').html(html);
+				}
+			},
+			error: function(){
+				alert('error');
+			}
+		});
+	}
+}
+
+var edit = {
+	isFileUploading : false,
+	init : function(){
+		edit.loadEventListener();
+	},
+
+	loadEventListener : function(){
+		$('#profilepic_input').on('change', function(){
+			edit.isFileUploading = true;
+			$('.editImgUploadDiv').html('<i style="  margin: 60px 58px; color: #838383;" class="fa fa-spinner fa-pulse"></i>');
+			$('#profilePicForm').submit();
+			
+			// var formdata = new FormData();
+			// formdata.append("files", this.files[0]);
+			// // formdata.append('files','just data');
+			// // formdata.append('test','testtt');
+			// $.ajax({
+			// 	url : 'ajax/upload.ajax.php',
+			// 	// dataType : 'JSON',
+			// 	data:formdata ? formdata : form.serialize(),
+			// 	processData:false,
+			// 	contentType:false,
+			// 	type:'POST',
+			// 	success : function(data){
+			// 		alert('ss'+data);
+			// 	},
+			// 	error: function(){
+			// 		alert('error');
+			// 	}
+			// });
+		});
+
+		$('#profilePicForm').on('submit', function(){
+
+		});
+
+		$('#profilepic_btn').on('click', function(){
+			$('#profilepic_input').click();
+		});
+
+		$('.editImgUploadDiv').hover(function(){
+			if(!edit.isFileUploading){
+				$('.editImgUploadDiv').css({'opacity' : '0.7'});
+			}
+		}, function(){
+			if(!edit.isFileUploading){
+				$('.editImgUploadDiv').css({'opacity' : '0'});
+			}
+		});
+
+		$('body').on('mouseenter', '.editHeader', function () {
+			if(!edit.isFileUploading){
+				$('.editImgUploadDiv').css({'opacity' : '0.7'});
+			}
+		}).on('mouseleave', '.editHeader', function () {
+			if(!edit.isFileUploading){
+				$('.editImgUploadDiv').css({'opacity' : '0'});
+			}
+		});
+
+		$(".selectExpertise").select2({
+			tags: "true",
+			placeholder: "type your experience or expertise follwed by enter"
+		});
+		$(".countrySelect").select2();
+
+		$('#editForm').on('submit', function(){
+			if($.trim($('#email').val()) == '' ||
+			$.trim($('#realname').val()) == '' ||
+			$.trim($('#realsurname').val()) == '' ||
+			$.trim($('#password').val()) == '' ||
+			$.trim($('#repassword').val()) == ''){
+				//alert('fill form');
+				$('#status').html('<i class="fa fa-exclamation"></i> Please fill all the forms').slideDown();
+				return false;
+			}
+
+			if(!register.validateEmail($.trim($('#email').val()))){
+				$('#status').html('<i class="fa fa-exclamation"></i> Invalid email format').slideDown();
+				return false;
+			}
+
+			if($.trim($('#password').val()) != $.trim($('#repassword').val())){
+				$('#status').html('<i class="fa fa-exclamation"></i> Password does not match').slideDown();
+				return false;
+			}
+
+			$.ajax({
+				url : 'ajax/userdata.ajax.php',
+				dataType : 'JSON',
+				type : 'POST',
+				data : {
+					type : 'editUser',
+					email : $('#email').val(),
+					realname : $('#realname').val(),
+					realsurname : $('#realsurname').val(),
+					password : $('#password').val(),
+					repassword : $('#repassword').val(),
+					location : $('#countrySelect').val(),
+					userbio : $('#userbio').val(),
+					expertise : $('#selectExpertise').val()
+				},
+				success : function(data){
+					if(data.status == 'success'){
+						window.location.href = 'edit.php';
+					}
+				},
+				error: function(){
+					alert('error');
+				}
+			});
+
+			return false;
+		});
+	}
+}
+
+var articleForm = {
+	init : function(){
+		articleForm.loadEventListener();
+	},
+
+	loadEventListener : function(){
+		$('#chooseFile').on('change', function () {
+			var filename = $("#chooseFile").val();
+			if ($.trim(filename) == '') {
+				$(".file-upload").removeClass('chooseFileActive');
+				$("#noFile").text("No file chosen..."); 
+			}
+			else {
+				$(".file-upload").addClass('chooseFileActive');
+				$("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
+			}
+		});
+
+		$('#articleForm').on('submit', function(){
+
+			tinyMCE.triggerSave();
+			//check if inputs are empty
+			if($.trim($('#article_title').val()) == '' || 
+				$.trim($('#article_body').val()) == ''){
+				// $.trim($('#chooseFile').val()) == '' ||){
+					$('#status')
+					.html("<i class='fa fa-exclamation'></i> Please fill all the forms").slideDown();
+					// .css('display', 'block');
+					return false;
+			}
+
+			$(this).attr('action', 'ajax/article.ajax.php');
+			$(this).attr('method', 'POST');
+			// return false;
+		});
+	}
+}
+
+var launchCampaign = {
+	init : function(){
+		launchCampaign.loadEventListener();
+	},
+
+	loadEventListener : function(){
+		$(window).keydown(function(event){
+			if(event.keyCode == 13) {
+				event.preventDefault();
+				return false;
+			}
+		});
+
+		$('body').on('click', '.campaignPeopleImgWrap span', function(){
+			$(this).closest('.campaignPeopleImgWrap').remove();
+		});
+
+		$("#addPeopleInput").keyup(function (e) {
+			if (e.keyCode == 13) {
+
+			}
+		});
+
+		$('#launchCampaignForm').on('submit', function(){
+			//check if inputs are empty
+			if($.trim($('#campaign_title').val()) == '' || 
+				$.trim($('#campaign_location').val()) == '' ||
+				$.trim($('#campaign_about').val()) == '' ||
+				// $.trim($('#chooseFile').val()) == '' ||
+				$.trim($('#campaign_date').val()) == ''){
+					$('#status')
+					.html("<i class='fa fa-exclamation'></i> Please fill all the forms").slideDown();
+					// .css('display', 'block');
+					return false;
+			}
+
+			$(this).append('<input type="hidden" name="people_list" id="people_list">');
+			var peopleArr = [];
+			$('.campaignPeopleImgWrap').each(function(i, v){
+				peopleArr.push($(this).data('id'));
+			});
+			$('#people_list').val(JSON.stringify(peopleArr));
+
+			$(this).attr('action', 'ajax/campaign.ajax.php');
+			$(this).attr('method', 'POST');
+			// return false;
+		});
+
+		$('#chooseFile').on('change', function () {
+			var filename = $("#chooseFile").val();
+			if ($.trim(filename) == '') {
+				$(".file-upload").removeClass('chooseFileActive');
+				$("#noFile").text("No file chosen..."); 
+			}
+			else {
+				$(".file-upload").addClass('chooseFileActive');
+				$("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
+			}
+		});
+
+		var request = '';
+		$('#addPeopleInput').on('input', function() {
+			if($(this).val().length > 2){
+				if(request != ''){
+					request.abort();
+					request = '';
+				}
+				request = $.ajax({
+					url : 'ajax/userdata.ajax.php',
+					dataType : 'JSON',
+					type : 'GET',
+					data : {type : 'getUserSearch', keyword : $(this).val()},
+					success : function(data){
+						if(data.hasOwnProperty('status') && data.status == 'no results'){
+
+						}else{
+							$('.addPeopleSearch').show();
+							var html = '<ul>';
+							$.each(data, function(k, v){
+								html += '<li data-id="'+v.id+'"><img src="'+v.img+'" class="supporterImg"><span>'+v.realname+' '+v.realsurname+'</span><div style="clear:both;"></div></li>';
+							});
+							html += '</ul>';
+							$('.addPeopleSearch').html(html);
+							// 
+						}
+					},
+					error: function(){
+						alert('error');
+					}
+				});
+			}
+		});
+
+		$('body').on('click', '.addPeopleSearch ul li', function(){
+			var userid = $(this).data('id');
+			console.log($(this).find('img'));
+			var img = $(this).find('img').attr('src');
+			var html = '<div class="campaignPeopleImgWrap" data-id="'+userid+'"><img class="supporterImg" title="" src="'+img+'"><span id="removePeople"><i class="fa fa-times"></i></span></div>';
+			$('.campaignPeopleForm').append(html);
+			$('.addPeopleSearch').hide();
+			$('#addPeopleInput').val('');
+
 		});
 	}
 }

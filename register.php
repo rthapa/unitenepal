@@ -62,7 +62,7 @@ echo $html->injectHeader();
 						<input class="formIn" type="password" id="repassword" name="repassword" maxlength="100" placeholder="Confirm Password"> 
 					</span>
 					<div style="clear:both"></div>
-					<p id="status"></p>
+					<p id="status" style="width: 241px; margin: 0 0 12px;"></p>
 					
 					<button style="width: 250px; margin-top:0px" class="btn" type="submit">Sign up</button>
 				</form>

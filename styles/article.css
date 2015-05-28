@@ -6,12 +6,12 @@
 	font-size: 14px;
 	color: */#555;
 
-	font-size: 16px;
+	/*font-size: 16px;*/
 	line-height: 20px;
 	/*color: #999;*/
 	color: #555;
 	font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
-	font-weight: 400;
+	/*font-weight: 400;*/
 }
 li{
 	list-style-type: none;
@@ -1326,7 +1326,7 @@ video {
 	object-fit: cover;
 }
 .articleContent{
-	height: 120px;
+	height: 220px;
 	padding: 15px;
 }
 
@@ -1358,7 +1358,6 @@ video {
 	font-size: 13px;
 	padding: 10px;
 	margin:0px;
-	margin: 10px 0 0 0;
 }
 
 .articleViewContent,

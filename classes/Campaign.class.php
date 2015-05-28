@@ -18,21 +18,6 @@ class Campaign extends Object{
 	protected $userid;
 	protected $img;
 
-	public static function getFromId($id, $connection){
-		$query = $connection->query('SELECT * FROM campaigns
-							WHERE id =:id LIMIT 1',
-							array(":id"=>$id)) ;
-		if(count($query) > 0){
-			$obj = new Campaign();
-			foreach($query = $query[0] as $key => $value){
-				$obj->$key = $value;
-			}
-			return $obj;
-		}else{
-			return new Campaign;
-		}
-	}
-
 	public static function getFromUserId($userid, $connection){
 		return self::getFromSql('SELECT * FROM campaigns WHERE userid = :userid',
 								array(':userid' => $userid), $connection);
@@ -61,7 +46,8 @@ class Campaign extends Object{
 										':link' => $this->getLink(),
 										':description' => $this->getDescription(),
 										':userid' => $this->getUserId(),
-										':img' => $this->getImg()
+										':img' => $this->getImg(),
+										':id' => $this->getId()
 										));
 		}else{
 			$connection->insertRow('INSERT INTO
@@ -109,28 +95,28 @@ class Campaign extends Object{
 		return $this->happeningdate = $value;
 	}
 
-	public function setLocation(){
-		return $this->location;
+	public function setLocation($value){
+		return $this->location = $value;
 	}
 
-	public function setLink(){
-		return $this->link;
+	public function setLink($value){
+		return $this->link = $value;
 	}
 
-	public function setDescription(){
-		return $this->description;
+	public function setDescription($value){
+		return $this->description = $value;
 	}
 
-	public function setCreated(){
-		return $this->created;
+	public function setCreated($value){
+		return $this->created = $value;
 	}
 
-	public function setUserId(){
-		return $this->userid;
+	public function setUserId($value){
+		return $this->userid = $value;
 	}
 
-	public function setImg(){
-		return $this->img;
+	public function setImg($value){
+		return $this->img = $value;
 	}
 
 	/* Getters */

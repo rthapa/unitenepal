@@ -30,9 +30,17 @@ body{
 	<?php include_once('includes/nav.php'); ?>
 	<div class="editWrapper">
 		<div class="editHeader">
-			<img src="<?=$thisUser->getImg()?>">
+			<form id="profilePicForm">
+				<img src="<?=$thisUser->getImg()?>">
+				<!-- <input type="file" name="profilepic" id="profilepic_input" style=""> -->
+				<div class="editImgUploadDiv"><span class="btn" id="profilepic_btn">change</span></div>
+			</form>
 		</div>
-		<form style="padding: 40px 80px;" id="signupForm"><!-- action="signup.php" method="post"-->
+		<form style="padding: 55px 80px 40px;" id="editForm"><!-- action="signup.php" method="post"-->
+			<input type="hidden" name="type" value="editUser" >
+			<!-- <div style="text-align: center; margin-bottom: 23px;">
+				<input type="checkbox"><p style="display:inline; margin-left: 5px;">use facebook profile picture.</p>
+			</div> -->
 			<div class="formLeft">
 				<span class="inputWrapper">
 					<span><i class="fa fa-user"></i></span>
@@ -70,7 +78,7 @@ body{
 					<input class="formIn" type="password" id="repassword" name="repassword" maxlength="100" placeholder="Confirm Password" value="default"> 
 				</span>
 				<div style="clear:both"></div>
-				<select class="countrySelect" style="width: 253px;">
+				<select class="countrySelect" id="countrySelect" style="width: 253px;">
 					<option value="" disabled selected>Current location</option>
 					<option <?=($thisUser->getLocation()=="Afghanistan"?'selected':'')?> value="Afghanistan">Afghanistan</value>
 					<option <?=($thisUser->getLocation()=="Albania"?'selected':'')?> value="Albania">Albania</value>
@@ -310,7 +318,7 @@ body{
 				</select>
 			</div>
 			<div style="clear:both"></div>
-			<select class="selectExpertise" multiple="" tabindex="-1" aria-hidden="true" style="width:540px">
+			<select name="expertise[]" id="selectExpertise" class="selectExpertise" multiple="" tabindex="-1" aria-hidden="true" style="width:540px">
 				<?php
 					$expertise = Expertise::getExpertiseFromUserId($thisUser->getId(), $db);
 					foreach($expertise as $exp){
@@ -321,19 +329,17 @@ body{
 				?>
 			</select>
 			<span class="inputWrapper">
-				<textarea placeholder="Brief bio ..." style="margin-top: 15px;"><?=$thisUser->getBio()?></textarea>
+				<textarea id="userbio" placeholder="Brief bio ..." style="margin-top: 15px;"><?=$thisUser->getBio()?></textarea>
 			</span>
 			<p id="status"></p>
 			
-			<button style="width: 250px; margin-top:15px" class="btn" type="submit">Save</button>
+			<button style="width: 250px; margin:15px 0 0 132px" class="btn" type="submit">Save</button>
 		</form>
 	</div>
 </div>
 
 <script type="text/javascript">
-	$(".selectExpertise").select2({
-		tags: "true",
-		placeholder: "type your expertise with enter"
+	$(function() {
+		edit.init();
 	});
-	$(".countrySelect").select2();
 </script>

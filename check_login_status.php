@@ -9,6 +9,8 @@ require __DIR__.'/classes/Html.class.php';
 require __DIR__.'/classes/Article.class.php';
 require __DIR__.'/classes/Expertise.class.php';
 require __DIR__.'/classes/Campaign.class.php';
+require __DIR__.'/classes/Appreciate.class.php';
+
 
 $db = new PDOConnect();
 

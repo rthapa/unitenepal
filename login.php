@@ -38,7 +38,7 @@ echo $html->injectHeader();
 						<input class="formIn" type="password" name="password" id="password" maxlength="100" placeholder="Password"> 
 					</span>
 					<div style="clear:both"></div>
-					<p id="status"></p>
+					<p id="status" style="margin: 0px 0 10px;  width: 240px;"></p>
 					
 					<button style="width: 250px; margin-top:0px" class="btn" type="submit">Log in</button>
 				</form>

@@ -12,21 +12,6 @@ class Expertise extends Object{
 	protected $expertise;
 	protected $userid;
 
-	public static function getFromId($id, $connection){
-		$query = $connection->query('SELECT * FROM expertise
-							WHERE id =:id LIMIT 1',
-							array(":id"=>$id)) ;
-		if(count($query) > 0){
-			$obj = new Expertise();
-			foreach($query = $query[0] as $key => $value){
-				$obj->$key = $value;
-			}
-			return $obj;
-		}else{
-			return new Expertise;
-		}
-	}
-
 	public static function getExpertiseFromUserId($userid, $connection){
 		return self::getFromSql('SELECT * FROM expertise WHERE userid = :userid',
 								array(':userid' => $userid), $connection);
@@ -65,6 +50,10 @@ class Expertise extends Object{
 
 			$this->id = $connection->getLastInsertId();
 		}
+	}
+
+	public function delete($connection){
+		$connection->deleteRow('DELETE FROM expertise WHERE id = :id', array(':id'=>$this->getId()));
 	}
 
 	/* Setters */
